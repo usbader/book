@@ -14,20 +14,35 @@
       <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
       <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
+      
+            <nav>
+        <div class="nav-wrapper teal lighten-2">
+          <ul>
+            <li><a href="cities.html">My Favorite Cities</a></li>
+            <li><a href="subscribe.html">Subscribe</a></li>
+          </ul>
+        </div>
+      </nav>
 
-      <div class="container">
+       <div class="container">
 
         <h1>Bader Alshemaimri</h1>
 
-   
-
-      </div>
-
+         <div id="resume">  
+         
+         </div>
+         
+         <h3> Tasks</h3>
+         <ul class="collection" id="tasks">
+        </ul>
+      
+       </div>
       <script>
 
 
          // create a firebase reference to the root
         var ref = new Firebase('https://usbader-book1.firebaseio.com')
+        var ref2 = new Firebase('https://killinit-base.firebaseio.com')
 
         
         ref.child("resume").once('value', function(snapshot){
@@ -35,16 +50,42 @@
 	var newStr = ' '
 	for (key in resumes) {
 	     newStr = key.replace(/-/g, " ")
-		$('div').append('<h3>'+ newStr + '</h3>')
+		$('#resume').append('<h3>'+ newStr + '</h3>')
 		  newStr = key.replace(/ /g, "-")
-		$('div').append('<ul class="collection" id="' + newStr + '">')
+		$('#resume').append('<ul class="collection" id="' + newStr + '">')
 		resumes[key].forEach(function(snapshot){
 			$('#'+newStr).append('<li class="collection-item">' + snapshot + '</li>')
 		})
-		$('div').append('</ul>')
+		$('resume').append('</ul>')
 	}
+	   
 })
-
+    
+        // read data from the location todos/tasks, only once
+        ref2.child('todos/tasks').once('value', function(snapshot){
+          var tasks = snapshot.val()
+              color= ''
+              button= ''
+          
+            for (var taskNumber in tasks){
+            var task = tasks[taskNumber]
+             if(task.assigned=='Bader'){
+                  if(task.priority=='high'){
+              color = 'red'
+            } else if(task.priority=='medium'){
+              color = 'yellow'
+            } else if(task.priority=='completed'){
+              color = 'blue'
+              button = '<a class="btn disabled">Completed</a>'
+            } else {
+              color = 'green'
+            }
+            $('#tasks').append('<div class="row"><div class="col s12 m20"><div class="card ' + color + '"><div class="card-content white-text"><span class="card-title">' + task.name + '</span><p><i class= "tiny material-icons">assignment_ind</i> Assigned To: ' + task.assigned + '<br><i class="tiny material-icons">assessment</i> Priority: ' + task.priority + '<br><i class="tiny material-icons">label_outline</i> Type: ' + task.type + '<br><i class="tiny material-icons">today</i> Due Date: ' + task.deadline + '<br>' + button +'</p></div></div></div></div>')
+               
+            }
+         }
+         
+      })
       </script>
     </body>
   </html>
