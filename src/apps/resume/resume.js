@@ -9,9 +9,12 @@
     
   "Skills" : [ "Programming: C++, Java, PHP, HTML, CSS", "DB: MySQL, SQL server 2000", "CCNA certified" ]
     
-
-    
-    
+  },
+  
+  "list" : {
+    "email" : [
+     { "value":"baal5078@colorado.edu" } 
+    ]
   }
   
 

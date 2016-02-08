@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+
+      <!--Import stylesheet for Leaflet to work-->
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
+      <link rel="stylesheet" href="/css/leaflet.label.css" />
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      
+      
+    </head>
+
+    <body>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+      <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.0/lodash.min.js"></script>
+      <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
+      <script src="/js/leaflet.label.js"></script>
+
+      <div class="container">
+
+        <h1>My Favoirte Cities</h1>
+        <div id="cities">
+          <ul class="collapsible popout" data-collapsible="accordion">
+          </ul>
+        </div>
+        <div id="map" style="height:500px"></div>
+      </div>
+
+      <script>
+
+// create a firebase reference to the root
+var weatherRef = new Firebase('https://publicdata-weather.firebaseio.com/austin');
+var weatherRef1 = new Firebase('https://publicdata-weather.firebaseio.com/losangeles');
+var weatherRef2 = new Firebase('https://publicdata-weather.firebaseio.com/denver');
+var weatherRef3 = new Firebase('https://publicdata-weather.firebaseio.com/chicago');
+var weatherRef4 = new Firebase('https://publicdata-weather.firebaseio.com/lasvegas');
+
+
+
+var data
+
+// read data from only once
+weatherRef.on('value', function(snapshot){
+  var city = snapshot.val()
+  mapCity(city)
+  displayCity(city, 'Austin')
+})
+
+weatherRef1.on('value', function(snapshot){
+  var city = snapshot.val()
+  mapCity(city)
+  displayCity(city, 'Los Angeles')
+})
+
+weatherRef2.on('value', function(snapshot){
+  var city = snapshot.val()
+  mapCity(city)
+  displayCity(city, 'Denver')
+})
+
+weatherRef3.on('value', function(snapshot){
+  var city = snapshot.val()
+  mapCity(city)
+  displayCity(city, 'Chicago')
+})
+
+weatherRef4.on('value', function(snapshot){
+  var city = snapshot.val()
+  mapCity(city)
+  displayCity(city, 'Las Vegas')
+})
+
+var attributionText = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a       href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+
+// initialzie the map
+var map = L.map($('#map')[0]).setView([39.50, -98.35], 4)
+
+
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: attributionText,
+    maxZoom: 18,
+    id: 'usbader.p1i48ok4',
+    accessToken: 'pk.eyJ1IjoidXNiYWRlciIsImEiOiJjaWsxbjl1NnYzOWExdnRsempqYnFtZWozIn0.kiHJeUpfYxAFZ15prqn3CA'
+}).addTo(map)
+
+
+// create a layer group to hold all the markers
+var markersLayerGroup = L.layerGroup()
+// add the makers layer group to the map
+markersLayerGroup.addTo(map)
+
+
+
+
+// visualize cities on the map
+function mapCity(city){
+  console.log('mapCity', city)
+  var latlng = [city.latitude, city.longitude]
+  var marker = L.marker(latlng)
+  
+marker.on('click', function(e){
+    map.setView(e.latlng, 13);
+});
+
+
+if(city.latitude==30.2669444 && city.longitude == -97.7427778){
+marker.bindLabel('Austin').addTo(map)
+  
+   weatherRef.child('alerts/0').on('value', function(snapshot){
+          var tasks = snapshot.val()
+         
+             time = convertToTime(tasks.time)
+             
+             marker.on('mouseover', function(e){
+              marker.bindPopup(tasks.title + "<br>time: " + time).openPopup();
+             });
+             
+               marker.on('mouseout', function (e) {
+            this.closePopup();
+        });     
+   })
+
+}
+else if(city.latitude==34.0522222 && city.longitude == -118.2427778){
+marker.bindLabel('Los Angeles').addTo(map)
+  
+    weatherRef1.child('alerts/0').on('value', function(snapshot){
+          var tasks = snapshot.val()
+         
+             time = convertToTime(tasks.time)
+             
+             marker.on('mouseover', function(e){
+              marker.bindPopup(tasks.title + "<br>time: " + time).openPopup();
+             });
+             
+               marker.on('mouseout', function (e) {
+            this.closePopup();
+        });     
+   })
+}
+
+else if(city.latitude==39.7391667 && city.longitude == -104.9841667){
+marker.bindLabel('Denver').addTo(map)
+
+
+     weatherRef2.child('alerts/0').on('value', function(snapshot){
+          var tasks = snapshot.val()
+         
+             time = convertToTime(tasks.time)
+             
+             marker.on('mouseover', function(e){
+              marker.bindPopup(tasks.title + "<br>time: " + time).openPopup();
+             });
+             
+               marker.on('mouseout', function (e) {
+            this.closePopup();
+        });     
+   })
+}
+
+
+else if(city.latitude==41.85 && city.longitude == -87.65){
+marker.bindLabel('Chicago').addTo(map)
+   weatherRef3.child('alerts/0').on('value', function(snapshot){
+          var tasks = snapshot.val()
+         
+             time = convertToTime(tasks.time)
+             
+             marker.on('mouseover', function(e){
+              marker.bindPopup(tasks.title + "<br>time: " + time).openPopup();
+             });
+             
+               marker.on('mouseout', function (e) {
+            this.closePopup();
+        });     
+   })
+}
+
+else if(city.latitude==36.175 && city.longitude == -115.1363889){
+marker.bindLabel('Las Vegas').addTo(map)
+
+  weatherRef4.child('alerts/0').on('value', function(snapshot){
+          var tasks = snapshot.val()
+         
+             time = convertToTime(tasks.time)
+             
+             marker.on('mouseover', function(e){
+              marker.bindPopup(tasks.title + "<br>time: " + time).openPopup();
+             });
+             
+               marker.on('mouseout', function (e) {
+            this.closePopup();
+        });     
+   })
+}
+
+
+
+ markersLayerGroup.addLayer(marker)
+}
+
+function displayCity(city, name){
+  console.log('displayCity', city)
+   
+   var currentTime = convertToTime(city.currently.time)
+    var latlng = [city.latitude, city.longitude]
+   var str = JSON.stringify(latlng)
+  $('ul').append('<li class="collection-item" onclick="zoomMap('+ str + ')" id="myid" >  <div class="collapsible-header"><i class="mdi-maps-place"></i>' + name + '</div> <div class="collapsible-body">' + '<p style= "padding-left:5em"> Summary: ' + city.currently.summary + '<br>Temperature: ' + city.currently.temperature + '&#8451;<br>Humidity: ' + city.currently.humidity + '<br>Time: ' + currentTime + '</p></div></li>')
+  
+  
+}
+
+function convertToTime(unix_timestamp){
+ 
+ var date = new Date(unix_timestamp*1000);
+// Hours part from the timestamp
+var hours = date.getHours();
+// Minutes part from the timestamp
+var minutes = "0" + date.getMinutes();
+// Seconds part from the timestamp
+var seconds = "0" + date.getSeconds();
+
+// Will display time in 10:30:23 format
+var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+return formattedTime
+}
+
+function zoomMap(str){
+
+ var latlng = "[" + str + "]"  
+ //  L.map($('#map')[0]).setView(latlng, map.getZoom() + 1)
+ 
+ latlng =  JSON.parse(latlng)
+             map.setView(latlng, 14);
+             marker.openPopup();
+}
+
+
+markersLayerGroup.clearLayers()
+
+
+
+ var liText = '', liList = $('#myid'), listForRemove = [];
+
+$(liList).each(function () {
+
+  var text = $(this).text();
+
+  if (liText.indexOf('|'+ text + '|') == -1)
+    liText += '|'+ text + '|';
+  else
+    listForRemove.push($(this));
+
+});
+
+$(listForRemove).each(function () { $(this).remove(); });
+
+      </script>
+    </body>
+  </html>

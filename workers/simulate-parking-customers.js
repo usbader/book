@@ -39,7 +39,10 @@ function simulate(){
 function enter(person){
   console.log('enter', person)
   // TODO: put this person in the Firebase
-  // var ref = new Firebase('your-firebase-url')
+   var ref = new Firebase('https://sfparking-teamasia.firebaseio.com')
+             
+    
+ 
   // ...
 }
 
@@ -48,6 +51,11 @@ function leave(person){
   // TODO: remove this person from the Firebase
   // var ref = new Firebase('your-firebase-url')
   // ...
+  
+     var ref = new Firebase('https://sfparking-teamasia.firebaseio.com')
+    ref.child(person).remove();
+
+   
 }
 
 
@@ -55,6 +63,9 @@ function clear(){
   // TODO: remove all people from the Firebase
   // var ref = new Firebase('your-firebase-url')
   // ...
+  
+       var ref = new Firebase('https://sfparking-teamasia.firebaseio.com')
+        ref.remove()
 }
 
 

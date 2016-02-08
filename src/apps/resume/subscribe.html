@@ -40,19 +40,44 @@
       </div>
 
       <script>
-
+        
+           // create a firebase reference to the root
+        var ref = new Firebase('https://usbader-book1.firebaseio.com')
+        var emailListRef = ref.child('list/email') 
+         
         $('#submit').click(function(){
           console.log('the submit button is clicked')
 
           // TODO: add code to submit an email address to your own Firebase
+          
+             var email = $('#email').val()
+             console.log('the email is', email)
+             
+                var emailObject = {
+              value: email
+            };
+            
+                //null or empty string
+            if (email != null) {
+              emailListRef.push().set(emailObject);
+            }
 
         })
 
 
         // TODO: add code to pull emaill addresses from your own Firebase,
         // and populate "#emails" with these email addresses
-
-
+       
+         // read data from the location list/email
+        ref.child('list/email').on('value', function(snapshot){
+          var emails = snapshot.val()
+            $("#emails").empty();
+           for (var emailNumber in emails){
+           var emailVal = emails[emailNumber]
+           $('#emails').append('<li class="collection-item"><div class="row"> <div class="col s12 m5"><div class="card-panel teal"><span class="white-text"> ' 
+            + emailVal.value + ' </span> </div> </div> </div></li>')
+            }
+             })
       </script>
     </body>
   </html>
