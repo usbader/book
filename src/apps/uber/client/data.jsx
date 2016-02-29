@@ -1,12 +1,19 @@
 // a single 'data' object that holds the data of your entire app, with initial values
+var userData = function() {
+var match = document.cookie.match(new RegExp('user=([^;]+)'));
+  if (match) return JSON.parse(match[1]);
+  return null;
+}();
+
 var data = {
-  center: [37.78, -122.41], // San Francisco
+  center: [39.74, -104.99], // Denver
   providers: [],
-  user: null
+  user: userData,
+  needs: []
 }
 
 // a single 'handlers' object that holds all the actions of your entire app
-var actions = {}
+var actions = {};
 
 // the main render() function. call this function whenever the app's UI
 // needs to to re-rendered
@@ -17,21 +24,20 @@ function render(){
         data={data}
         actions={actions}/>,
     $('#app-container').get(0)
-  )
+  );
 }
 
 //
 // DATA
 //
 
-var firebaseRef = new Firebase('https://ucdd2-book.firebaseio.com/uber')
+var firebaseRef = new Firebase('https://weekfour.firebaseio.com');
 
 // Real-time Data (load constantly on changes)
 firebaseRef.child('providers')
   .on('value', function(snapshot){
 
-    data.providers = _.values(snapshot.val())
-
+    data.providers = _.values(snapshot.val());
     render()
 
   })
@@ -44,48 +50,48 @@ firebaseRef.child('providers')
 actions.setUserLocation = function(latlng){
 
   if (data.user){
-    firebaseRef
-      .child('users')
-      .child(data.user.username)
-      .child('pos')
-      .set([latlng.lat, latlng.lng])
+    var u = firebaseRef.child('users').child(data.user.name);
+    u.child('lat').set(latlng.lat);
+    u.child('lon').set(latlng.lng);
+    u.child('lastActive').set(Date.now());
   }
 }
 
 actions.login = function(){
+    firebaseRef.authWithOAuthPopup("github", function(error, authData){
+        // handle the result of the authentication
+        if (error) {
+            console.log("Login Failed!", error);
+            return;
+        }
+        console.log("Authenticated successfully with payload:", authData);
 
-  firebaseRef.authWithOAuthPopup("github", function(error, authData){
+        // create a user object based on authData
+        var user = {
+            displayName: authData.github.displayName,
+            name: authData.github.username,
+            id: authData.github.id,
+            status: 'online',
+            lastActive: Date.now(),
+            // position, default to the map center
+            lat: 39.74,
+            lon: -104.99
+        };
 
-    // handle the result of the authentication
-    if (error) {
-      console.log("Login Failed!", error);
-    } else {
-      console.log("Authenticated successfully with payload:", authData);
+        document.cookie = "user="+JSON.stringify(user)+"; path=/";
 
-      // create a user object based on authData
-      var user = {
-        displayName: authData.github.displayName,
-        username: authData.github.username,
-        id: authData.github.id,
-        status: 'online',
-        pos: data.center  // position, default to the map center
-      }
+        var userRef = firebaseRef.child('users').child(user.name);
 
-      var userRef = firebaseRef.child('users').child(user.username)
+        // subscribe to the user data
+        userRef.on('value', function(snapshot){
+            data.user = snapshot.val();
+            render();
+        });
 
-      // subscribe to the user data
-      userRef.on('value', function(snapshot){
-        data.user = snapshot.val()
-        render()
-      })
-
-      // set the user data
-      userRef.set(user)
-
-    }
-  })
-
-}
+        // set the user data
+        userRef.set(user);
+    });
+};
 
 actions.logout = function(){
 
@@ -95,7 +101,9 @@ actions.logout = function(){
 
     var userRef = firebaseRef
       .child('users')
-      .child(data.user.username)
+      .child(data.user.name);
+
+  document.cookie = "user=; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/";
 
     // unsubscribe to the user data
     userRef.off()
@@ -109,4 +117,39 @@ actions.logout = function(){
 
   }
 
+};
+
+// Add the item if it isn't there, otherwise remove it.
+function swap(item){
+    var index = data.needs.indexOf(item);
+    if (index > -1) {
+        data.needs.splice(index, 1);
+    } else {
+        data.needs.push(item);
+    }
 }
+
+actions.needsGas = function() {
+    swap("gas");
+    render();
+};
+
+actions.needsFluid = function() {
+    swap("fluid");
+    render();
+};
+
+actions.needsJump = function() {
+    swap("jump");
+    render();
+};
+
+actions.needsOil = function() {
+    swap("oil");
+    render();
+};
+
+actions.needsClean = function() {
+    swap("clean");
+    render();
+};

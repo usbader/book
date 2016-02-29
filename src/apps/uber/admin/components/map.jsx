@@ -1,18 +1,31 @@
 
 const {Map, Marker, CircleMarker, Popup, TileLayer, MapLayer}  = window.ReactLeaflet;
 
-class UserMap extends React.Component {
+class MapView extends React.Component {
   render(){
 
     const users = this.props.users
     const userElements = _.map(users, function(p,i){
+      if (p.status === "online"){
+        console.log(p.status)
+        p.pos = [p.lat, p.lon]
+        return <CircleMarker radius={15} center={p.pos} key={i} color={'blue'}>
+          <Popup>
+            <span>{p.name}</span>
+          </Popup>
+        </CircleMarker>
+      }
+    });
+
+    const providers = this.props.providers
+    const providerElements = _.map(providers, function(p,i){
       p.pos = [p.lat, p.lon]
-      return <Marker position={p.pos} key={i}>
+      return <CircleMarker radius={15} center={p.pos} key={i} color={'green'}>
         <Popup>
           <span>{p.name}</span>
         </Popup>
-      </Marker>
-    })
+      </CircleMarker>
+    });
 
 
     // Note: .bind(this) is important for the handler function's 'this'
@@ -26,9 +39,9 @@ class UserMap extends React.Component {
                 url={mapurl}
                 attribution='&copy; <a href="Mapbox.com">Mapbox</a>'/>
         {userElements}
+        {providerElements}
         </Map>;
   }
 }
 
-MyComponents.UserMap = UserMap;
-
+MyComponents.MapView = MapView;

@@ -6,8 +6,7 @@ layout: layout.hbs
 
 ## Team Members
 
-(TODO: Names)
-
+Zach Lamb, Zhongzhi Zhang, Callan Fisher and Bader Alshemaimri
 ## Ideation
 
 These ideation questions are the same as before. Your answers should represent
@@ -15,35 +14,31 @@ the integration of creative ideas from every team member.
 
 * What is the name of your app?
 
-(TODO: Answer)
+Drink Together
 
 * What collaborative activity can people do together using your app?
 
-(TODO: Answer)
-
+People can collaboratively recommend, rate and share bars locations. They can invite their friends using the app without needing to call them. 
 * What is the ideal number of concurrent users (must be at least 10 but no more than 40)?
 
-(TODO: Answer)
+15-20
 
 * What skills do people need in order to do this activity?
 
-(TODO: Answer)
+They need to be familiar with using social websites because drink together is buit upon these. 
 
 * Is this activity for fun or for something practical?
 
-(TODO: Answer)
-
+It is for fun surely, but it could be something practical when drinking with coworkers.
 * How can a person see what everyone else is doing?
 
-(TODO: Answer)
-
+A person can see his/her friend's location on the map. He can also chat with him/her.
 * How can a person see the most recent result of everyone's collaborative effort?
 
-(TODO: Answer)
-
+By adding a status under every profile indicating whether a person left a bar or not.
 * What can an admin see (i.e., God's mode)?
 
-(TODO: Answer)
+An admin can see list of bars and users.
 
 ## Contributions
 

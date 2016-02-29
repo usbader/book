@@ -5,7 +5,7 @@ MyComponents.About = React.createClass({
     return (
       <div className="card">
         <div className="card-content">
-        <img src="img/profile.jpg" style={{float: floatt}} width="64" height="64"/>
+        <img src="profile.jpg" style={{float: "right", width: 64 + "px", height: 64 + "px"}}/>
         <p> Name: Bader Alshemaimri</p>
         <p> Major: Computer Science </p>
         <p> Degree: Master</p>

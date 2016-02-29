@@ -8,14 +8,14 @@
 
       <!--Import stylesheet for Leaflet to work-->
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
-      <link rel="stylesheet" href="leaflet.label.css" />
+      <link rel="stylesheet" href="/css/leaflet.label.css" />
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
 
     <style>
-    html {
+    html { 
         font-family: GillSans, Calibri, Trebuchet, sans-serif;
         background: url(images/sf2.jpg) no-repeat center center fixed; 
         -webkit-background-size: cover;
@@ -31,7 +31,7 @@
       <script src="https://cdn.firebase.com/js/client/2.3.2/firebase.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.0/lodash.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
-      <script src="leaflet.label.js"></script>
+      <script src="/js/leaflet.label.js"></script>
 
       <nav class="transparent">
         <div class="nav-wrapper">
@@ -64,46 +64,70 @@
       </footer> 
 
       <script>
-
+var map = L.map($('#map')[0]).setView([37.78, -122.41], 13)
 // create a firebase reference to the root
 var ref = new Firebase('https://publicdata-parking.firebaseio.com');
-
-var data
-
 // read data from the location san_francisco/garages, only once
 ref.child('san_francisco/garages').on('value', function(snapshot){
   data = snapshot.val()
   console.log('data is loaded', data)
-
   var garages = _.filter(data, function(d){
       return _.has(d, 'open_spaces')
   })
-
-  drawGarages(garages)
+  drawGarages(garages) 
 })
-
+//read data from our customer firebase
+var ref_people = new Firebase('https://sfparking-teamasia.firebaseio.com');
+ref_people.on('value',function(snapshot){
+  people = snapshot.val()
+  drawPeople(people)
+})
+var busLayer = L.layerGroup()
+busLayer.addTo(map)
+var ref_bus = new Firebase('https://publicdata-transit.firebaseio.com/');
+ref_bus.child('sf-muni/vehicles').on('value', function(snapshot){
+ console.log('data is loaded', snapshot)
+ busLayer.clearLayers()
+ snapshot.forEach(function(bus) {
+    if(bus.child('vtype').val()=="bus") {
+      console.log("bus")
+      drawBus(bus);   
+    }
+ })
+})
 var attributionText = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, <a       href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
-
 // create the map
-var map = L.map($('#map')[0]).setView([37.78, -122.41], 13)
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: attributionText,
     maxZoom: 18,
     id: 'varshinij.p0gd1h1f',
     accessToken: 'pk.eyJ1IjoidmFyc2hpbmlqIiwiYSI6ImNpanhwemV2ajE3bTZ2cW01MDBodDN3MHkifQ.dW1sUpYJi8JBiVYmT7FlFw'
 }).addTo(map)
-
 // create a layer group to hold all the markers
 var markersLayerGroup = L.layerGroup()
+var peopleLayer = L.layerGroup()
 // add the makers layer group to the map
 markersLayerGroup.addTo(map)
-
+peopleLayer.addTo(map)
+function drawPeople(people){
+  peopleLayer.clearLayers()
+_.forEach(people, function(person){
+  var myPeople = L.icon({
+        iconUrl: 'images/person.png',
+        iconSize: [40, 40],
+        iconAnchor: [0, 0],
+        popupAnchor: [20, 0],
+    });
+    var latlng = [person.lat, person.lon]
+    var marker = L.marker(latlng,{icon: myPeople}).addTo(map);
+    marker.bindPopup(person.name)
+    peopleLayer.addLayer(marker)
+  })
+}
 // visualize garages on a map
 function drawGarages(garages){
-
   // clear all existing markers (if any)
   markersLayerGroup.clearLayers()
-
   _.forEach(garages, function(garage){
     var points = garage.points
     var latlng = [points[0], points[1]]
@@ -111,7 +135,6 @@ function drawGarages(garages){
     var label = '<b>' + garage.friendlyName + '</b>';
     var d = new Date();
     var currHour = parseInt(d.getHours());
-
     _.forEach(garage.rates, function(rate){
       var begTime = parseInt(rate.BEG);
       var endTime = parseInt(rate.END);
@@ -124,49 +147,45 @@ function drawGarages(garages){
           }
         }
         else {
-          if(parseInt(amPMBeg[0]) < 12) { 
-            begTime = parseInt(amPMBeg[0]) + 12
-          }
+          if(parseInt(amPMBeg[0]) < 12) { begTime = parseInt(amPMBeg[0]) + 12 }
         }
       }
-
       if(typeof(rate.END)!="undefined") {
         var amPMEnd = rate.END.split(" ");
         if(amPMEnd[1] == "AM") {
-          if(parseInt(amPMEnd[0]) == 12){
-            endTime = 24;
-          }
+          if (parseInt(amPMEnd[0]) == 12) { endTime = 24; }
         }
         else {
-          if(parseInt(amPMEnd[0]) < 12) { 
-            endTime = parseInt(amPMEnd[0]) + 12
-          }
+          if (parseInt(amPMEnd[0]) < 12) { endTime = parseInt(amPMEnd[0]) + 12 }
         }
       }
-
       if ( (parseInt(begTime) <= parseInt(currHour)) && ( parseInt(currHour) < parseInt(endTime)) ) {
         label += '<br><b>Opens</b>: ' + rate.BEG + '<br><b>Closes</b>: ' + rate.END + '<br>' + '<i>Rate: $' + rate.RATE + ' '  + rate.RQ.toLowerCase() + '</i>'
       }
     })
-
     var myIcon = L.icon({
         iconUrl: 'images/marker.png',
-        
         iconSize: [40, 40],
-        iconAnchor: [22, 94],
-        popupAnchor: [-3, -76],
+        iconAnchor: [0, 0],
+        popupAnchor: [20, 0],
       
     });
     
     var marker = L.marker(latlng,{icon: myIcon}).addTo(map);
     marker.bindPopup(label); 
-
     markersLayerGroup.addLayer(marker)
-
   })
-
 }
-
-      </script>
-    </body>
-  </html>
+function drawBus(bus) {
+  var latlng = [bus.child('lat').val(), bus.child('lon').val()]
+  var busIcon = L.icon({
+      iconUrl: 'images/bus.png',
+      iconSize: [20, 20],
+  });
+  var marker = L.marker(latlng, {icon: busIcon}).addTo(map);
+  marker.bindLabel(bus.child('routeTag').val() + "")
+  busLayer.addLayer(marker) 
+}
+    </script>
+  </body>
+</html>

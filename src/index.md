@@ -15,17 +15,12 @@ Everything I've learned from UCDD 2 - Spring 2016.
 * Uber
   * [Mockup](apps/uber/mockup)
   * [ReactJS](apps/uber/)
-<<<<<<< HEAD
-* Together <span class="chip red">NEW</span>
-  * [Mockup](apps/together/mockup/index.html)
-=======
   * Demo: <span class="chip red">NEW</span>
     * [Plan](apps/uber/demo/plan.html)
     * [Execution](apps/uber/demo/execution.html)
 * Together
   * [Mockup](apps/together/mockup)
     * [Data Models](apps/together/mockup/data.html) <span class="chip red">NEW</span>
->>>>>>> fedf5584fc8a29c53bb0947ec31339789436b652
   * [ReactJS](apps/together)
 
 ## Learning

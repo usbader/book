@@ -57,16 +57,12 @@
         </div>
       </footer> 
     <script>
-
 // create a firebase reference to the root
 var ref = new Firebase('https://publicdata-parking.firebaseio.com');
-
 var data
-
 // read data from the location san_francisco/garages, only once
 ref.child('san_francisco/garages').on('value', function(snapshot){
   data = snapshot.val()
-
   // filter the data
   var garages = _.filter(data, function(d){
       // keep only those values (d) that has "open_spaces" as a field
@@ -78,8 +74,6 @@ ref.child('san_francisco/garages').on('value', function(snapshot){
   $('#garages').empty()
   displayGarages(garages)
 })
-
-
 function displayGarages(garages){
   // lodash _.forEach https://lodash.com/docs#forEach
   var d = new Date()
@@ -92,7 +86,6 @@ function displayGarages(garages){
     if(checkedOpen(val.hours, day, hour)){
       var rate = currentRate(val.rates, hour)
       var list = '<li><div class="collapsible-header blue-grey darken-4 white-text" id="key">'+val["friendlyName"]+'</div><div class="collapsible-body grey lighten-3"><p>'+'<b>Remaining Space</b>: ' + val.open_spaces + '<br><b>Current Rate</b>: $' + rate + ' / hr' + '<table class="striped centered"><thead><tr><th>Day of the Week</th><th>Time</th></thead><tbody>'
-
       if (val.hours instanceof Array){
         for (key in val.hours){
           var h = val.hours[key]
@@ -108,20 +101,15 @@ function displayGarages(garages){
         list += '<tr><td>' + val.hours["FROM"]
         if (typeof(val.hours["TO"]) == "string") { list += ' - ' + val.hours["TO"] }
         list += '</td>'
-
         list += '<td>' + val.hours["BEG"] 
         if (typeof(val.hours["END"]) == "string") { list += ' - ' + val.hours["END"]}
-
         list += '</td></tr>'
-
       }
-
       list+='</tbody></table></p></div></li>'
       $('#garages').append(list)
     }
   })
 }
-
 function currentRate(rates, hour){
   _.forEach(rates, function(rate){
       var begTime = parseInt(rate.BEG)
@@ -152,7 +140,6 @@ function currentRate(rates, hour){
           }
         }
       }
-
       if ((parseInt(begTime) <= hour) && (hour < parseInt(endTime))) {
         cr = rate.RATE
       }

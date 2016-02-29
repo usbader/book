@@ -25,16 +25,24 @@
     <!-- https://github.com/PaulLeCam/react-leaflet -->
     <script src="https://npmcdn.com/react-leaflet/dist/react-leaflet.min.js"></script>
 
-    <style>
-      .leaflet-container {
-        height: 400px;
-        width: 80%;
-        margin: 0 auto;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
   </head>
   <body>
+   
+        <nav>
+          <div class="nav-wrapper blue-grey darken-1">
+            <a href="../" class="brand-logo">Refresh My Ride!</a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="right">
+              <li><a href="../">Home</a></li>
+              <li><a href="../client/index.html">Client</a></li>
+              <li class="active"><a href="index.html">Admin</a></li>
+            </ul>
+          </div>
+        </nav>
+    </div>
+ <div class="container">
     <div id="app-container" class="container">
     </div>
 
@@ -46,9 +54,9 @@
     <!-- import each component class in components/ -->
     <!-- The order is important. Dependencies must be loaded first -->
     <script type="text/babel" src="components/user-list.jsx"></script>
-    <script type="text/babel" src="components/user-map.jsx"></script>
+    <script type="text/babel" src="components/map.jsx"></script>
     <script type="text/babel" src="components/provider-list.jsx"></script>
-    <script type="text/babel" src="components/provider-map.jsx"></script>
+    <!--<script type="text/babel" src="components/provider-map.jsx"></script>-->
 
     <!-- Main app container -->
     <script type="text/babel" src="components/app.jsx"></script>
